@@ -1,0 +1,19 @@
+
+package(default_visibility = ["//visibility:public"])
+
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+# load("@npm_bazel_typescript//:defs.bzl", "ts_devserver", "ts_library")
+
+ts_library(
+    name = "app",
+    srcs = ["index.ts"],
+    # deps = ["//lexer", "//parser", "//interpreter"],
+)
+
+load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+
+rollup_bundle(
+  name = "bundle",
+  entry_point = "index.ts",
+  deps = [":app"],
+)
