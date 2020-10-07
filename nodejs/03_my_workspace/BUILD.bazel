@@ -1,0 +1,49 @@
+
+package(default_visibility = ["//visibility:public"])
+
+load("@build_bazel_rules_nodejs//:index.bzl", "nodejs_binary")
+# load("@io_bazel_rules_docker//nodejs:image.bzl", "nodejs_image")
+load("@npm//@bazel/typescript:index.bzl", "ts_library")
+# load("@npm_bazel_typescript//:defs.bzl", "ts_devserver", "ts_library")
+
+ts_library(
+    name = "app",
+    srcs = glob(
+        ["*.ts"],
+        exclude = ["*.spec.ts"],
+    ),
+      deps = [
+        "@npm//express",
+        "@npm//@types/express",
+        "@npm//@types/node",
+        "@npm//tslib",
+    ],
+)
+
+# bazel run //src:server -- --port=4000
+# TODO(gregmagolan): add test for nest server with protractor rule once it is brought in
+nodejs_binary(
+    name = "server",
+    data = [
+        ":app",
+        "@npm//express",
+        "@npm//@types/express",
+        "@npm//minimist",
+    ],
+    entry_point = ":index.ts",
+    # templated_args = ["--nobazel_patch_module_resolver"],
+)
+
+# bazel build --platforms=@build_bazel_rules_nodejs//toolchains/node:linux_amd64 //src:docker
+# nodejs_image(
+#     name = "docker",
+#     binary = ":server",
+# )
+
+# load("@npm//@bazel/rollup:index.bzl", "rollup_bundle")
+
+# rollup_bundle(
+#   name = "bundle",
+#   entry_point = "index.ts",
+#   deps = [":app"],
+# )
